@@ -3,7 +3,6 @@ package core;
 /**
  * Created by jonathanbrodie on 12/10/15.
  */
-import core.object.GameActor;
 
 
 public enum Event {
@@ -15,22 +14,21 @@ public enum Event {
 
     public static void deathCallback(GameActor object) {
 
-        Level currentLevel=object.getLevel();
-        currentLevel.removeObject(object);
+        object.destroy();
 
     }
     public static void useCallback(GameActor actor) {
 
     }
     public static void spawnCallback(GameActor object) {
-        Level level=object.getLevel();
-        level.addObject(object);
+        //;pl
     }
     public static void attackedCallback(GameActor actor) {
         //check actor's hp
         //actor.AI
     }
     public static void defaultHandle(Event event, GameActor actor) {
+
         switch (event) {
             case EVENT_ATTACKED:
                 attackedCallback(actor);

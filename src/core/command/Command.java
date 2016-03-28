@@ -1,6 +1,6 @@
 package core.command;
 
-import core.object.GameObject;
+import core.GameObject;
 
 /**
  * Created by jonathanbrodie on 9/22/15.

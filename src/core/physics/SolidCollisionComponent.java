@@ -1,7 +1,7 @@
-package core.object.physics;
+package core.physics;
 
-import core.object.GameObject;
-import core.Position;
+import core.GameObject;
+import core.util.Position;
 
 import java.util.List;
 /**
@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class SolidCollisionComponent extends CollisionComponentImpl {
 
-    public double FRICTION_X=0.99;
-    public double FRICTION_Y=0.9;
+    private final double FRICTION_X=0.7;
+    private final double FRICTION_Y=0.9;
 
     public boolean isSolid() {
         return true;
@@ -36,13 +36,11 @@ public class SolidCollisionComponent extends CollisionComponentImpl {
         double angle=Math.atan2(optimal.getY(),optimal.getX());
         double xdist=Math.cos(angle)*mindist;
         double ydist=Math.sin(angle)*mindist;
-            newY+=ydist;
-
-            newX+=xdist;
-
+        if (ydist != 0) owner.getVelocity().setY(owner.getVelocity().getY()*FRICTION_Y);
+        if (xdist != 0) owner.getVelocity().setX(owner.getVelocity().getX()*FRICTION_X);
+        newY+=ydist;
+        newX+=xdist;
         object.setPosition(new Position(newX, newY));
-
-
     }
     @Override
     public void move(GameObject object) {

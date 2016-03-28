@@ -1,4 +1,4 @@
-package core;
+package core.util;
 
 /**
  * Created by jonathanbrodie on 9/3/15.

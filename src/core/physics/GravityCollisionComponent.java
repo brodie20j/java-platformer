@@ -1,10 +1,8 @@
-package core.object.physics;
+package core.physics;
 
 import core.Level;
-import core.Position;
-import core.object.GameObject;
-
-import java.util.List;
+import core.util.Position;
+import core.GameObject;
 
 /**
  * Created by jonathanbrodie on 9/12/15.
@@ -28,8 +26,9 @@ public class GravityCollisionComponent extends CollisionComponentImpl implements
     public void gravity(GameObject object) {
         if (this.inAir)
             object.getVelocity().setY(object.getVelocity().getY()+GRAVITY_CONSTANT);
-            if (object.getVelocity().getY() < -15) {
-                object.getVelocity().setY(-15);
+            //these should also be constants somewhere
+            if (object.getVelocity().getY() < -35) {
+                object.getVelocity().setY(-35);
             }
 
     }

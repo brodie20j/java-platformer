@@ -1,6 +1,7 @@
-package core;
+package core.util;
 
-import core.object.GameObject;
+import core.GameObject;
+import core.Power;
 
 import java.lang.Math;
 /**
@@ -9,8 +10,8 @@ import java.lang.Math;
 public class Velocity {
     private double x;
     private double y;
-    final int hspeedCap=15;
-    final int vspeedCap=50;
+    private int hspeedCap=10;
+    private int vspeedCap=35;
     public Velocity() {
         this.x=0;
         this.y=0;
@@ -36,8 +37,9 @@ public class Velocity {
                 this.y=vspeedCap;
             }
         }
+        if (this.x > 0) {
+        }
         object.setPosition(new Position(objectx+this.x,objecty+this.y));
-
 
     }
     public double getNetVelocity() {
@@ -45,7 +47,19 @@ public class Velocity {
         double square= Math.pow(x,2)+Math.pow(y,2);
         return Math.sqrt(square);
     }
-
+    public void superSpeed() {
+        this.hspeedCap*= Power.SPEED_MULTIPLIER;
+        this.x*= Power.SPEED_MULTIPLIER;
+        this.y*= Power.SPEED_MULTIPLIER;
+        this.vspeedCap*=Power.SPEED_MULTIPLIER;
+        System.out.println("Speed increased");
+    }
+    public void releaseSpeed() {
+        this.hspeedCap/=Power.SPEED_MULTIPLIER;
+        this.vspeedCap/=Power.SPEED_MULTIPLIER;
+        this.x/= Power.SPEED_MULTIPLIER;
+        this.y/= Power.SPEED_MULTIPLIER;
+    }
     public double getX() {
         return this.x;
     }

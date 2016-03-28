@@ -1,6 +1,4 @@
-package core.object;
-
-import core.Event;
+package core;
 
 
 /**
@@ -8,11 +6,13 @@ import core.Event;
  */
 public interface ActorFields {
 
+    String getName();
     int getVitality();
     int getMaxVitality();
     int getPower();
     int getDefense();
     boolean isHostile();
     void onEvent(Event event, GameActor actor);
+
 
 }

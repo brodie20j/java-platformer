@@ -1,6 +1,6 @@
-package core.object.physics;
+package core.physics;
 
-import core.object.GameObject;
+import core.GameObject;
 
 /**
  * Created by jonathanbrodie on 9/9/15.

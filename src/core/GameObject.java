@@ -1,10 +1,14 @@
-package core.object;
+package core;
 
-import core.Level;
-import core.Position;
-import core.Velocity;
-import core.object.physics.PhysicsComponent;
-import core.object.graphic.GraphicComponent;
+import core.util.Position;
+import core.util.Velocity;
+import core.physics.PhysicsComponent;
+import core.graphic.GraphicComponent;
+import core.util.ObjectSorter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by jonathanbrodie on 8/25/15.
@@ -12,7 +16,7 @@ import core.object.graphic.GraphicComponent;
 public class GameObject {
     private Position currentPosition;
     private Velocity velocity=new Velocity();
-    private Level currentLevel;
+    public final Level currentLevel;
     private PhysicsComponent physicsComponent;
     private GraphicComponent graphicComponent;
     private int graphicPointer;
@@ -22,11 +26,9 @@ public class GameObject {
         this.physicsComponent=physics;
         this.graphicComponent=graphics;
         this.currentLevel=currentLevel;
+        this.currentLevel.addObject(this);
     }
 
-    public Level getLevel() {
-        return this.currentLevel;
-    }
     public Position getCurrentPosition() {
         return this.currentPosition;
     }
@@ -50,13 +52,33 @@ public class GameObject {
         return this.graphicComponent;
     }
     public PhysicsComponent getPhysics() {return this.physicsComponent;}
-    public void setPointer(int value) {
+    public synchronized void setPointer(int value) {
         this.graphicPointer=value;
     }
-    public int getPointer() {
+    public synchronized int getPointer() {
         return this.graphicPointer;
     }
+    @Override
+    public GameObject clone() {
+        GameObject obj= new GameObject(new Position(this.getCurrentPosition().getX(),this.getCurrentPosition().getY(),this.getCurrentPosition().getZ()),this.physicsComponent,this.graphicComponent,currentLevel);
+        obj.setPointer(this.graphicPointer);
+        return obj;
+    }
 
+    public void destroy() {
 
+        this.currentLevel.removeObject(this);
+    }
+    public List<GameObject> getObjectsSortedByMe() {
+
+        List<GameObject> newList=new ArrayList<>();
+        for (GameObject object1 : this.currentLevel.getGameObjects()) {
+            newList.add(object1);
+        }
+        ObjectSorter sorter=new ObjectSorter(this.getCurrentPosition());
+        Collections.sort(newList, sorter);
+        return newList;
+
+    }
 
 }

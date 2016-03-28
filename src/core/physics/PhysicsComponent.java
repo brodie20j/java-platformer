@@ -1,7 +1,7 @@
-package core.object.physics;
+package core.physics;
 
 import core.Level;
-import core.object.GameObject;
+import core.GameObject;
 
 /**
  * Created by jonathanbrodie on 9/8/15.

@@ -1,5 +1,5 @@
-package core.object.graphic;
-import core.object.GameObject;
+package core.graphic;
+import core.GameObject;
 import core.util.Pair;
 /**
  * Created by jonathanbrodie on 8/31/15.

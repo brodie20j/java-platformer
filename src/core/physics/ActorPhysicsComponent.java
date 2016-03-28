@@ -1,7 +1,7 @@
-package core.object.physics;
+package core.physics;
 
-import core.object.GameActor;
-import core.object.GameObject;
+import core.GameActor;
+import core.GameObject;
 import core.util.Combat;
 /**
  * Created by jonathanbrodie on 9/12/15.
@@ -27,6 +27,7 @@ public class ActorPhysicsComponent extends GravityCollisionComponent {
         if (otherActor.getFields().isHostile()) {
             GameActor attacker=null;
             GameActor attacked=null;
+            if (actor.INVINCIBLE_FLAG || otherActor.INVINCIBLE_FLAG) return;
             if (actor.ATTACK_FLAG && otherActor.ATTACK_FLAG) {
                 //both actors are attacking!  Resolve!
                 if (otherActor.getFields().getPower() > actor.getFields().getPower()) {
@@ -55,7 +56,9 @@ public class ActorPhysicsComponent extends GravityCollisionComponent {
                 return;
             }
             else {
+                System.out.println("Combat");
                 Combat.combat(attacker,attacked);
+
             }
         }
         else {

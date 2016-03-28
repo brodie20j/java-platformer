@@ -1,24 +1,29 @@
 package frontend;
 import core.*;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import core.input.DefaultInputComponent;
+import core.ai.DumbAgent;
+import core.input.PlayerInputComponent;
 import core.input.Input;
-import core.object.ActorFields;
-import core.object.GameActor;
-import core.object.GameObject;
-import core.object.graphic.SpriteSheetImpl;
-import core.object.physics.SolidCollisionComponent;
+import core.ActorFields;
+import core.GameActor;
+import core.GameObject;
+import core.graphic.Animation;
+import core.graphic.SpriteSheetImpl;
+import core.physics.SolidCollisionComponent;
+import core.util.Position;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-
+import java.util.List;
 
 public class Controller implements EventHandler<KeyEvent> {
     public Level current;
@@ -28,13 +33,14 @@ public class Controller implements EventHandler<KeyEvent> {
     private Pane gameBoard;
     @FXML
     private Button tester;
-
+    private List<GameObjectNode> list;
     private void setUpAnimationTimer() {
         TimerTask timerTask = new TimerTask() {
             public void run() {
                 Platform.runLater(new Runnable() {
                     public void run() {
                         updateAnimation();
+                        current.update();
                     }
                 });
             }
@@ -50,18 +56,26 @@ public class Controller implements EventHandler<KeyEvent> {
 
     }
     public void initialize() {
-        current=new Level();
-        SpriteSheetImpl test1=new SpriteSheetImpl("/res/test.png",64,64,1,1);
+        this.list=new ArrayList<>();
+        current=new Level(new Position(0,0));
+        SpriteSheetImpl test1=new SpriteSheetImpl("/res/test2.png",128,128,1,1);
         test1.addAnimation("ANIMATION_DEFAULT", 0,1);
-        GameObject object = new GameObject(new Position(0,-300),new SolidCollisionComponent(),test1,current);
-        GameObject object2 = new GameObject(new Position(64,-436),new SolidCollisionComponent(),test1,current);
-        GameObject object3 = new GameObject(new Position(129,-436),new SolidCollisionComponent(),test1,current);
-        GameObject object4 = new GameObject(new Position(200,-436),new SolidCollisionComponent(),test1,current);
-        GameObject object5 = new GameObject(new Position(270,-436),new SolidCollisionComponent(),test1,current);
-        GameObject object6 = new GameObject(new Position(270,-372),new SolidCollisionComponent(),test1,current);
-        GameObject object7 = new GameObject(new Position(0,-365),new SolidCollisionComponent(),test1,current);
+        SolidCollisionComponent component=new SolidCollisionComponent();
+        for (int i=0; i<75; i++) {
+            if (i > 30) {
+                GameObject object2=new GameObject(new Position(i*64,-100),component,test1,current);
+            }
+            GameObject object=new GameObject(new Position(i*64,-436),component,test1,current);
+        }
+        GameObject object=new GameObject(new Position(64,-372),component,test1,current);
+
 
         ActorFields fields=new ActorFields() {
+            @Override
+            public String getName() {
+                return "PLAYER";
+            }
+
             @Override
             public int getVitality() {
                 return 1;
@@ -94,13 +108,17 @@ public class Controller implements EventHandler<KeyEvent> {
         };
         ActorFields fields2=new ActorFields() {
             @Override
+            public String getName() {
+                return "David Musicant";
+            }
+            @Override
             public int getVitality() {
-                return 1;
+                return 2;
             }
 
             @Override
             public int getMaxVitality() {
-                return 1;
+                return 2;
             }
 
             @Override
@@ -119,41 +137,63 @@ public class Controller implements EventHandler<KeyEvent> {
             }
             @Override
             public void onEvent(Event event, GameActor actor) {
+                if (event==Event.EVENT_USED) {
+                    System.out.println("Hello world. My name is "+getName());
+                }
                 Event.defaultHandle(event, actor);
             }
 
         };
-        SpriteSheetImpl spriteSheet=new SpriteSheetImpl("/test2.png",64,64,3,3);
-        spriteSheet.addAnimation("ANIMATION_DEFAULT", 0,4);
-        spriteSheet.addAnimation("ANIMATION_JUMP",0,1);
+        SpriteSheetImpl spriteSheet=new SpriteSheetImpl("/res/mario-temp.png",64,64,4,1);
+        SpriteSheetImpl spriteSheet2=new SpriteSheetImpl("/res/goombas.png",128,128,5,4);
+        spriteSheet2.addAnimation(Animation.DEFAULT_CONSTANT, 18,19);
+        spriteSheet2.addAnimation("ANIMATION_JUMP",0,2);
+        spriteSheet2.addAnimation("ANIMATION_ATTACK",0,1);
+        spriteSheet2.addAnimation(Animation.MOVE_CONSTANT,12,14);
+        spriteSheet2.addAnimation(Animation.DEAD_CONSTANT,0,1);
+        spriteSheet.addAnimation(Animation.DEFAULT_CONSTANT, 0,1);
+        spriteSheet.addAnimation("ANIMATION_JUMP",2,4);
         spriteSheet.addAnimation("ANIMATION_ATTACK",0,1);
-        spriteSheet.addAnimation("ANIMATION_RUN",0,1);
-
-        GameActor actor = new GameActor(new Position(0,0),fields,spriteSheet,current);
-        GameActor actor2 = new GameActor(new Position(200,0),fields2,spriteSheet,current);
-
-        actor.setInput(new DefaultInputComponent());
-        current.addObject(object);
-        current.addObject(object2);
-        current.addObject(object3);
-        current.addObject(object4);
-        current.addObject(object5);
-        current.addObject(actor);
-        current.addObject(actor2);
-        current.addObject(object6);
-        current.addObject(object7);
+        spriteSheet.addAnimation(Animation.MOVE_CONSTANT,0,2);
+        spriteSheet.addAnimation(Animation.DEAD_CONSTANT,0,1);
 
 
+        GameActor actor2 = new GameActor(new Position(100,0),fields2,spriteSheet2,current);
+        GameActor actor3=new GameActor(new Position(1000,0),fields2,spriteSheet2,current);
+        //actor3.setAI(new );
+        actor2.setAI(new DumbAgent());
+
+
+        SpriteSheetImpl sheet=new SpriteSheetImpl("/res/star-test2.png",64,64,1,3);
+        sheet.addAnimation("ANIMATION_DEFAULT", 0,1);
+        GameEffect effect=GameEffect.createEffect(actor2,sheet,0,0,10000);
+
+        current.addPlayer(fields, spriteSheet, new PlayerInputComponent());
+        current.update();
         this.setUpAnimationTimer();
     }
     private void updateAnimation() {
         this.gameBoard.getChildren().clear();
-        this.current.update();
-        for (GameObject object : current.getDrawList()) {
-            GameObjectNode node = new GameObjectNode(object);
-            this.gameBoard.getChildren().add(node);
-            node.draw();
+
+        Position pos=new Position(0,0);
+        for (GameObject object : current.getGameObjects()) {
+            if (object instanceof GameActor) {
+                GameActor actor= (GameActor) object;
+                if (actor.getInputComponent() != null) {
+                    pos=new Position(actor.getCurrentPosition().getX()-100,actor.getCurrentPosition().getY()+250);
+                }
+            }
         }
+
+        for (GameObject object : current.getDrawList(pos,675)) {
+            GameObjectNode node = new GameObjectNode(object);
+            node.draw();
+            node.setLayoutX(node.getLayoutX()-pos.getX());
+            node.setLayoutY(node.getLayoutY()+pos.getY());
+            this.gameBoard.getChildren().add(node);
+
+        }
+
     }
     /**
      * Handles keyboard events.
@@ -164,7 +204,6 @@ public class Controller implements EventHandler<KeyEvent> {
         Input input=null;
         KeyCode code=keyEvent.getCode();
         if (keyEvent.getEventType() == KeyEvent.KEY_RELEASED) {
-            System.out.println("are we even here");
             switch (code) {
                 case LEFT:
                     input = Input.INPUT_RELEASE_LEFT;
@@ -172,12 +211,10 @@ public class Controller implements EventHandler<KeyEvent> {
                 case RIGHT:
                     input = Input.INPUT_RELEASE_RIGHT;
                     break;
-                case SHIFT:
-                    input=Input.INPUT_BUTTON_2;
+                case Z:
+                    input = Input.INPUT_RELEASE_BUTTON_2;
                     break;
-                default:
-                    input = Input.INPUT_BUTTON_1;
-                    break;
+
             }
         }
         else if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED){
@@ -190,9 +227,6 @@ public class Controller implements EventHandler<KeyEvent> {
                     break;
                 case UP:
                     input = Input.INPUT_UP;
-                    break;
-                case DOWN:
-                    input = Input.INPUT_RIGHT;
                     break;
                 case X:
                     input=Input.INPUT_BUTTON_1;
@@ -214,7 +248,4 @@ public class Controller implements EventHandler<KeyEvent> {
         if (input != null)
         current.handleInput(input);
         }
-    public static void tester(GameActor actor) {
-        System.out.println("HELLO WORLD!!! The Callback worked!");
-    }
 }

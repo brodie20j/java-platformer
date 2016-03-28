@@ -1,14 +1,13 @@
-package core.object;
-import core.*;
+package core;
 import core.ai.ArtificialIntelligence;
 import core.command.Command;
 import core.input.Input;
 import core.input.InputComponent;
-import core.object.graphic.SpriteSheetImpl;
-import core.object.physics.ActorPhysicsComponent;
-import core.object.graphic.GraphicComponent;
-import core.object.physics.GravityComponent;
-
+import core.graphic.SpriteSheetImpl;
+import core.physics.ActorPhysicsComponent;
+import core.graphic.GraphicComponent;
+import core.physics.GravityComponent;
+import core.util.Position;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,14 +24,13 @@ public class GameActor extends GameObject {
     private InputComponent inputComponent;
     //ai-controlled
     private ArtificialIntelligence aiComponent;
-
     private GameObject target;
-
     public int CURRENT_HP;
     public boolean ATTACK_FLAG = false;
     public boolean COUNTER_FLAG=false;
 
-
+    // TODO: 12/31/15
+    public volatile boolean INVINCIBLE_FLAG=false;
 
     public GameActor(Position start, ActorFields fields, GraphicComponent graphicComponent, Level currentLevel) {
         super(start, new ActorPhysicsComponent(), graphicComponent, currentLevel);
@@ -55,13 +53,11 @@ public class GameActor extends GameObject {
             nextCommand.execute(this);
         }
 
-        if (this.CURRENT_HP > this.fields.getMaxVitality()) this.CURRENT_HP=this.fields.getMaxVitality();
-
-
+        if (this.CURRENT_HP > this.fields.getMaxVitality())
+            this.CURRENT_HP=this.fields.getMaxVitality();
         if (this.CURRENT_HP <= 0) {
             fields.onEvent(Event.EVENT_DEATH,this);
         }
-
         this.targets.clear();
         super.step();
 
@@ -93,7 +89,7 @@ public class GameActor extends GameObject {
         this.aiComponent=aiComponent;
     }
     public void setInput(InputComponent input) {
-        this.getLevel().addActorToInput(this);
+        this.currentLevel.addActorToInput(this);
         this.inputComponent=input;
     }
     public void handleInput(Input input) {
@@ -120,7 +116,14 @@ public class GameActor extends GameObject {
     public GravityComponent getActorPhysics() {
         return (GravityComponent) super.getPhysics();
     }
-    public void useCallback() {
-        this.fields.onEvent(Event.EVENT_USED, this);
+    public InputComponent getInputComponent() {
+        return this.inputComponent;
+    }
+    @Override
+    public GameActor clone() {
+        GameObject oldClone=super.clone();
+        GameActor newClone=new GameActor(new Position(this.getCurrentPosition().getX(),this.getCurrentPosition().getY(),this.getCurrentPosition().getZ()),fields,getActorGraphics(),currentLevel);
+        newClone.setPointer(oldClone.getPointer());
+        return newClone;
     }
 }

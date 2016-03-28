@@ -17,4 +17,8 @@ public class Pair {
     public int getSecond() {
         return this.second;
     }
+    @Override
+    public String toString() {
+        return "1: "+first+"\t2: "+second;
+    }
 }

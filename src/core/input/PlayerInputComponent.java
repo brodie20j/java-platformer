@@ -1,14 +1,20 @@
 package core.input;
 
+import core.GameObject;
 import core.command.ActorCommand;
-import core.object.GameActor;
+import core.GameActor;
 
 /**
  * Created by jonathanbrodie on 11/7/15.
  */
-public class DefaultInputComponent implements InputComponent{
+public class PlayerInputComponent implements InputComponent{
+
+
     @Override
-    public void handleInput(Input input, GameActor player) {
+    public void handleInput(Input input, GameObject object) {
+        this.handleInput(input, (GameActor) object);
+    }
+    private void handleInput(Input input, GameActor player) {
 
         switch (input) {
             case INPUT_LEFT:
@@ -23,17 +29,21 @@ public class DefaultInputComponent implements InputComponent{
                 player.addCommand(ActorCommand.JUMP);
                 break;
             case INPUT_BUTTON_1:
+                player.addCommand(ActorCommand.USE);
                 player.addCommand(ActorCommand.ATTACK);
                 break;
             case INPUT_BUTTON_2:
-                player.addCommand(ActorCommand.JUMP);
-                //player.addCommand(ActorCommand.USE);
+                player.addCommand(ActorCommand.POWER);
+                break;
+            case INPUT_RELEASE_BUTTON_2:
+                player.addCommand(ActorCommand.POWER_OFF);
                 break;
             case INPUT_BUTTON_3:
                 player.addCommand(ActorCommand.COUNTER);
                 break;
             case INPUT_BUTTON_4:
                 player.addCommand(ActorCommand.JUMP);
+                break;
             case INPUT_DOWN:
                 //player.getVelocity().setY(-5);
                 break;
